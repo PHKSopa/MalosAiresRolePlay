@@ -49,24 +49,33 @@ CMD:yo(playerid, params[])
 	    
 	if(sscanf(params, "s[70]", desc))
 	     return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yo [descripción] (hasta 65 caracteres)");
-	if(descActive[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes otra descripción activa. Bórrala con /yob.");
 	if(strlen(desc) > 65)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "La descripción es demasiada larga, ingresa una más corta. (MAX 65 CARACTERES)");
 
-	format(str, sizeof(str), "%s", desc);
-	descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
-	SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s. Usa /yob para eliminarla.", str);
-	strmid(descText[playerid], str, 0, strlen(str));
-	descActive[playerid] = true;
-	return 1;
+	if(!descActive[playerid]){
+		format(str, sizeof(str), "%s", desc);
+		descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
+		SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s. Usa /yob para eliminarla.", str);
+		strmid(descText[playerid], str, 0, strlen(str));
+		descActive[playerid] = true;
+		return 1;
+	} else {
+	    DestroyDynamic3DTextLabel(descLabel[playerid]);
+		SendClientMessage(playerid, COLOR_WHITE, "Has actualizado tu descripción actual. Usa /yob para eliminarla.");
+		ResetDescVariables(playerid);
+		format(str, sizeof(str), "%s", desc);
+		descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
+		strmid(descText[playerid], str, 0, strlen(str));
+		descActive[playerid] = true;
+		return 1;
+	}
 } 
 
 CMD:yob(playerid, params[])
 {
 	if(!descActive[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ninguna descripción activa.");
-
+	    
 	DestroyDynamic3DTextLabel(descLabel[playerid]);
 	SendClientMessage(playerid, COLOR_WHITE, "Has borrado tu descripción actual. Para escribir una nueva usa /yo.");
 	ResetDescVariables(playerid);

@@ -3328,27 +3328,27 @@ public AntiCheatTimer()
 }
 public fuelCar(playerid, refillprice, refillamount, refilltype)
 {
-	if(refilltype == 1)
-	{
-    	VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
-		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
-	} else
-		if(refilltype == 2)
-		{
-			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BIDON)
-			{
-		    	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
-		    	SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
-			}
-			else
-			{
+    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid]) || (PlayerInfo[playerid][pFaction] == FAC_HOSP && MedDuty[playerid]) || (PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid]) ) {
+        	VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
+			SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %%) por $%d. El dinero s descontara de la cuenta del gobierno.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
+            GiveFactionMoney(FAC_GOB, -refillprice);
+	} else {
+		if(refilltype == 1) {
+    		VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
+			SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
+		} else if(refilltype == 2) {
+			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BIDON) {
+		    		SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
+		    		SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
+			} else {
 			    SendClientMessage(playerid, COLOR_WHITE, "{FF4600}[Error]:{C8C8C8} No tienes un bidón de combustible en tu mano derecha.");
 				TogglePlayerControllable(playerid, true);
 				fillingFuel[playerid] = false;
 				return 1;
 			}
 	    }
-	GivePlayerCash(playerid,-refillprice);
+		GivePlayerCash(playerid,-refillprice);
+	}
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 	TogglePlayerControllable(playerid, true);
 	fillingFuel[playerid] = false;
@@ -14227,8 +14227,9 @@ CMD:llenar(playerid, params[])
 			}
 		}
 	refillprice = PRICE_FULLTANK / 100 * (100 - preamount); // precio para llenar el tanque
-	if(GetPlayerCash(playerid) < refillprice)
-	{
+	if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid]) || (PlayerInfo[playerid][pFaction] == FAC_HOSP && MedDuty[playerid]) || (PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid]) ) {
+        refillamount = 100;
+	} else if(GetPlayerCash(playerid) < refillprice) {
         refillamount = GetPlayerCash(playerid) / (PRICE_FULLTANK / 100); // en porcentaje
     	refillprice = GetPlayerCash(playerid);
 	} else

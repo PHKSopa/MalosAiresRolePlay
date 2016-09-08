@@ -378,6 +378,8 @@ CMD:ptazer(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
+	if(GetHandItem(playerid, HAND_RIGHT) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tener nada en tu mano derecha.");
 	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
 	ResetPlayerWeapons(playerid);
 	tazerStatus[playerid] = TAZER_EQUIPPED;
